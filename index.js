@@ -36,6 +36,9 @@ app.get('/services', (req, res) => {
 app.get('/diabetology', (req, res) => {
   res.render("pages/diabetology");
 })
+app.get('/ediabetes', (req, res) => {
+  res.render("pages/ediabetes");
+})
 app.get('/diagnostic-depart', (req, res) => {
   res.render("pages/diagnostic-depart");
 })
@@ -48,11 +51,14 @@ app.get('/brain', (req, res) => {
 app.get('/psychology', (req, res) => {
   res.render("pages/psychology");
 })
+app.get('/psychologyQuestionnaire', (req, res) => {
+  res.render("pages/psychologyQuestionnaire");
+})
 app.get('/liver', (req, res) => {
   res.render("pages/liver");
 })
-app.get('/heartdiagnosisfrontend', (req, res) => {
-  res.render("pages/heartdiagnosisfrontend");
+app.get('/heartDiseasePrediction', (req, res) => {
+  res.render("pages/heartDiseasePrediction");
 })
 app.get('/Breast-Diagnostic', (req, res) => {
   res.render("pages/Breast-Diagnostic");
@@ -77,8 +83,18 @@ app.get('/Login', (req, res) => {
 app.get('/register', (req, res) => {
     res.render("pages/register");
 })
+
 app.get('/signin', (req, res) => {
     res.render("pages/signin");
+})
+app.get('/cardiovascularDiseaseQuestionnaire', (req, res) => {
+  res.render("pages/cardiovascularDiseaseQuestionnaire");
+})
+app.get('/cardiovascularDiseaseQuestionresult', (req, res) => {
+  res.render("pages/cardiovascularDiseaseQuestionresult");
+})
+app.get('/internalmedicine', (req, res) => {
+  res.render("pages/internalmedicine");
 })
 app.get('/doctorpasswordchange', (req, res) => {
     errorMessage = '';
@@ -601,6 +617,13 @@ app.post('/get_doctorInfo', (req, res) => {
               }
 })
 
+app.get('/get_diabetologyList', (req, res) => {
+  sql = "SELECT Fname, Mname, Lname, Specialization, Location1, Location2, City, Province, Country, PostalCode, Availability FROM doctors_registration WHERE Specialization = 'Diabetology'";
+  conn.query(sql, (error, result) => {
+    if (error) throw error
+    res.send(result);
+  })
+})
 
 app.post('/recordUpdate', upload.single("image"), (req,res) => {
   // console.log(req.file);
@@ -623,7 +646,10 @@ app.post('/recordUpdate', upload.single("image"), (req,res) => {
   sql = `SELECT id FROM patients_registration WHERE EmailId = "${email}" AND FName = "${firstName}" AND LName = "${lastName}"`;
   console.log(sql);
   conn.query(sql, (error, result) => {
-    if (error) throw error
+    if (error) {
+      res.send({"MySQL_Error": error});
+      return;
+    }
     if (result.length == 0) {
       res.send({error:"No patient matched in database."});
       return;
@@ -662,6 +688,12 @@ app.post('/recordUpdate', upload.single("image"), (req,res) => {
         extURL = "http://localhost:5000/connectionTesting";
         break;
       case "Pneumonia":
+        extURL = "https://pneumonia-api.onrender.com/checkPnemonia";
+        break;
+      case "Glioma":
+        extURL = "http://localhost:5000/connectionTesting";
+        break;
+      case "Alzheimers":
         extURL = "http://localhost:5000/connectionTesting";
         break;
       default:
@@ -684,8 +716,8 @@ app.post('/recordUpdate', upload.single("image"), (req,res) => {
         res.send(response.data);
       })
       .catch(err => {
-        console.error(err)
-        res.send({error: err});
+        console.error(err.response.data)
+        res.send({error: err.response.data});
     })
   })
 })
@@ -960,7 +992,6 @@ client.messages
       .then(message => console.log(message.dateCreated));    //message.sid
         }
     })
-
 
 
 
